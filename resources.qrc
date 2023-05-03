@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shaders/chunk/vertex.glsl</file>
+        <file>shaders/chunk/fragment.glsl</file>
+        <file>shaders/selection/vertex.glsl</file>
+        <file>shaders/selection/fragment.glsl</file>
+        <file>textures/grass.png</file>
+        <file>textures/grass_side.png</file>
+        <file>textures/dirt.png</file>
+        <file>textures/stone.png</file>
+        <file>textures/cobblestone.png</file>
+        <file>textures/sand.png</file>
+        <file>textures/water.png</file>
+    </qresource>
+</RCC>
