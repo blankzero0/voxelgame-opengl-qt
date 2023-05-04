@@ -1,4 +1,5 @@
 #include "world_builder.h"
+#include <functional>
 
 void WorldBuilder::set_center(const Point& center)
 {
@@ -11,7 +12,7 @@ WorldBuilder::WorldBuilder(World& world)
 	unsigned int thread_count = std::jthread::hardware_concurrency();
 	threads.reserve(thread_count);
 	for (size_t i = 0; i < thread_count; ++i)
-		threads.emplace_back(&WorldBuilder::run, this);
+		threads.emplace_back(std::bind_front(&WorldBuilder::run, this));
 }
 
 void WorldBuilder::request_chunk(const ChunkPosition& position)

@@ -1,5 +1,6 @@
 #include <cassert>
 #include "chunk_mesh_vertex_builder.h"
+#include <functional>
 
 namespace {
 
@@ -122,7 +123,7 @@ ChunkMeshVertexBuilder::ChunkMeshVertexBuilder(World& world)
 	unsigned int thread_count = std::jthread::hardware_concurrency();
 	threads.reserve(thread_count);
 	for (size_t i = 0; i < thread_count; ++i)
-		threads.emplace_back(&ChunkMeshVertexBuilder::run, this);
+		threads.emplace_back(std::bind_front(&ChunkMeshVertexBuilder::run, this));
 }
 
 void ChunkMeshVertexBuilder::request_chunk(const ChunkPosition& position)

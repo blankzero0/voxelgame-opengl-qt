@@ -3,9 +3,8 @@
 #include "raycast.h"
 
 PhysicsLoop::PhysicsLoop(Player& player, const Input& input, World& world)
-		: player(player), input(input), thread(&PhysicsLoop::run, this), world(world)
+		: player(player), input(input), thread(std::bind_front(&PhysicsLoop::run, this)), world(world)
 {
-
 }
 
 void PhysicsLoop::run(const std::stop_token& stop_token)
