@@ -1,4 +1,4 @@
-# from https://github.com/qknight/libnoise/blob/master/cmake/Modules/FindLibNoise.cmake
+# adapted from https://github.com/qknight/libnoise/blob/master/cmake/Modules/FindLibNoise.cmake
 
 # Locate libnoise.
 # This module defines
@@ -23,6 +23,7 @@ FIND_PATH(LIBNOISE_INCLUDE_DIR "noise.h"
   /usr/include/noise
   /usr/include/noise
   /usr/include
+  /usr/include/libnoise # Debian
   /sw/include/noise 
   /sw/include/noise 
   /sw/include # Fink
