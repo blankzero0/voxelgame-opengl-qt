@@ -1,5 +1,7 @@
 # Minecraft Clone with OpenGL in C++
 
+[![CMake](https://github.com/blankzero0/voxelgame-opengl-qt/actions/workflows/cmake.yml/badge.svg)](https://github.com/blankzero0/voxelgame-opengl-qt/actions/workflows/cmake.yml)
+
 ## Features
 * procedurally generated
 * infinite world
