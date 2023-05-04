@@ -1,5 +1,4 @@
-#include <random>
-#include <noise/noise.h>
+#include <noise.h>
 #include <stdexcept>
 #include "chunk.h"
 #include "blocks/air_block.h"
