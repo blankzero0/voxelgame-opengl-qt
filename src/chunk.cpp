@@ -25,6 +25,10 @@ const Block& player_placed_block = cobblestone_block;
 
 namespace {
 
+template <typename T, size_t N>
+using Array3D = std::array<std::array<std::array<T, N>, N>, N>;
+using Blocks = Array3D<BlockIndex, Chunk::size>;
+
 const std::array all_blocks = std::to_array<std::reference_wrapper<const Block>>({
 	air_block,
 	grass_block,
@@ -57,64 +61,48 @@ BlockIndex select_block(int64_t x, int64_t z, int64_t y, int64_t terrain_height)
 	return stone;
 }
 
-template<size_t... Ys>
-std::array<BlockIndex, Chunk::size> make_line(const ChunkPosition& position, int64_t x, int64_t z, std::index_sequence<Ys...>)
+Blocks make_empty()
 {
-	int64_t terrain_height = std::round(
-			perlin.GetValue(static_cast<double>(x) / 16, 0, static_cast<double>(z) / 16) * 4 +
-					perlin.GetValue(static_cast<double>(x) / 64, 0, static_cast<double>(z) / 64) * 16
-	);
-
-	return {select_block(x, z, position.y * Chunk::size + Ys, terrain_height)...};
+	Blocks blocks;
+	std::fill_n(blocks[0][0].data(), Chunk::size * Chunk::size * Chunk::size, air);
+	return blocks;
 }
 
-template<size_t... Zs>
-std::array<std::array<BlockIndex, Chunk::size>, Chunk::size> make_plane(const ChunkPosition& position, int64_t x, std::index_sequence<Zs...>)
+Blocks make_full()
 {
-	return {make_line(position, x, position.z * Chunk::size + Zs, std::make_index_sequence<Chunk::size>{})...};
+	Blocks blocks;
+	std::fill_n(blocks[0][0].data(), Chunk::size * Chunk::size * Chunk::size, stone);
+	return blocks;
 }
 
-template<size_t... Xs>
-std::array<std::array<std::array<BlockIndex, Chunk::size>, Chunk::size>, Chunk::size>
-make_blocks(const ChunkPosition& position, std::index_sequence<Xs...>)
-{
-	return {make_plane(position, position.x * Chunk::size + Xs, std::make_index_sequence<Chunk::size>{})...};
-}
-
-template<size_t... Is>
-std::array<std::array<std::array<BlockIndex, Chunk::size>, Chunk::size>, Chunk::size>
-make_empty(std::index_sequence<Is...>)
-{
-	return {((void)Is, air)...};
-}
-
-std::array<std::array<std::array<BlockIndex, Chunk::size>, Chunk::size>, Chunk::size>
-make_empty()
-{
-	return make_empty(std::make_index_sequence<Chunk::size * Chunk::size * Chunk::size>{});
-}
-
-template<size_t... Is>
-std::array<std::array<std::array<BlockIndex, Chunk::size>, Chunk::size>, Chunk::size>
-make_full(std::index_sequence<Is...>)
-{
-	return {((void)Is, stone)...};
-}
-
-std::array<std::array<std::array<BlockIndex, Chunk::size>, Chunk::size>, Chunk::size>
-make_full()
-{
-	return make_full(std::make_index_sequence<Chunk::size * Chunk::size * Chunk::size>{});
-}
-
-std::array<std::array<std::array<BlockIndex, Chunk::size>, Chunk::size>, Chunk::size> make_blocks(const ChunkPosition& position)
+Blocks make_blocks(const ChunkPosition& position)
 {
 	if (position.y > 3)
 		return make_empty();
 	if (position.y < -3)
 		return make_full();
 
-	return make_blocks(position, std::make_index_sequence<Chunk::size>{});
+	Blocks blocks;
+
+	for (size_t cx = 0; cx < Chunk::size; ++cx) {
+		int64_t x = static_cast<int64_t>(position.x * Chunk::size) + static_cast<int64_t>(cx);
+		for (size_t cz = 0; cz < Chunk::size; ++cz) {
+			int64_t z = static_cast<int64_t>(position.z * Chunk::size) + static_cast<int64_t>(cz);
+
+			int64_t terrain_height = std::round(
+					perlin.GetValue(static_cast<double>(x) / 16, 0, static_cast<double>(z) / 16) * 4 +
+							perlin.GetValue(static_cast<double>(x) / 64, 0, static_cast<double>(z) / 64) * 16
+			);
+
+			for (size_t cy = 0; cy < Chunk::size; ++cy) {
+				int64_t y = static_cast<int64_t>(position.y * Chunk::size) + static_cast<int64_t>(cy);
+
+				blocks[cx][cz][cy] = select_block(x, z, y, terrain_height);
+			}
+		}
+	}
+
+	return blocks;
 }
 
 }
