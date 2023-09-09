@@ -1,5 +1,6 @@
-#include <noise.h>
 #include <stdexcept>
+#include <cmath>
+#include <cassert>
 #include "chunk.h"
 #include "blocks/air_block.h"
 #include "blocks/grass_block.h"
@@ -7,6 +8,7 @@
 #include "blocks/water_block.h"
 #include "blocks/sand_block.h"
 #include "blocks/cobblestone_block.h"
+#include "noise.h"
 
 
 namespace {
@@ -37,8 +39,6 @@ const std::array all_blocks = std::to_array<std::reference_wrapper<const Block>>
 	sand_block,
 	cobblestone_block,
 });
-
-const noise::module::Perlin perlin;
 
 BlockIndex select_block(int64_t x, int64_t z, int64_t y, int64_t terrain_height)
 {
@@ -90,8 +90,7 @@ Blocks make_blocks(const ChunkPosition& position)
 			int64_t z = static_cast<int64_t>(position.z * Chunk::size) + static_cast<int64_t>(cz);
 
 			int64_t terrain_height = std::round(
-					perlin.GetValue(static_cast<double>(x) / 16, 0, static_cast<double>(z) / 16) * 4 +
-							perlin.GetValue(static_cast<double>(x) / 64, 0, static_cast<double>(z) / 64) * 16
+					fractal_perlin_noise2d({static_cast<float>(x), static_cast<float>(z)})
 			);
 
 			for (size_t cy = 0; cy < Chunk::size; ++cy) {

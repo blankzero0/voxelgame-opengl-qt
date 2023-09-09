@@ -1,5 +1,5 @@
-#include <cmath>
 #include "geometry.h"
+#include <cmath>
 
 Vector operator-(const Vector& v)
 {
@@ -66,6 +66,16 @@ Vector& operator-=(Vector& lhs, const Vector& rhs)
 bool operator==(const ChunkPosition& lhs, const ChunkPosition& rhs)
 {
 	return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
+
+Vector2D angle_to_vector(float angle)
+{
+	return {std::cos(angle), std::sin(angle)};
+}
+
+float dot_product(const Vector2D& lhs, const Vector2D& rhs)
+{
+	return lhs.x * rhs.x + lhs.y * rhs.y;
 }
 
 std::size_t std::hash<ChunkPosition>::operator()(const ChunkPosition& chunk_position) const noexcept

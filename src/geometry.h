@@ -9,14 +9,24 @@ struct Base3D {
 	T x, y, z;
 };
 
+template<typename T>
+struct Base2D {
+	T x, y;
+};
+
 struct Point : public Base3D<float> {
 };
 
-struct Point2D {
-	float x, y;
+struct Point2D : Base2D<float> {
+};
+
+struct GridPoint2D : Base2D<int32_t> {
 };
 
 struct Vector : public Base3D<float> {
+};
+
+struct Vector2D : public Base2D<float> {
 };
 
 Vector operator-(const Vector& v);
@@ -30,13 +40,13 @@ Point& operator+=(Point& lhs, const Vector& rhs);
 Vector rotation_to_forward_vector(float yaw, float pitch);
 Vector rotation_to_right_vector(float yaw, float pitch);
 
-struct ChunkCoords {
-	uint8_t x, y, z;
+Vector2D angle_to_vector(float angle);
+float dot_product(const Vector2D& lhs, const Vector2D& rhs);
+
+struct ChunkCoords : Base3D<uint8_t> {
 };
 
-struct ChunkPosition {
-	int16_t x, y, z;
-
+struct ChunkPosition : Base3D<int16_t> {
 	template<size_t I>
 	[[nodiscard]] int16_t get() const;
 };
@@ -61,8 +71,7 @@ struct std::hash<ChunkPosition> {
 };
 
 
-struct BlockPosition {
-	int64_t x, y, z;
+struct BlockPosition : Base3D<int64_t> {
 };
 
 enum BlockDirection {

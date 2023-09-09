@@ -11,4 +11,3 @@
 
 ## Dependencies
 * Qt6
-* libnoise

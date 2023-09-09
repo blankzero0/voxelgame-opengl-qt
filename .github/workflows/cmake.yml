@@ -30,7 +30,7 @@ jobs:
       uses: awalsh128/cache-apt-pkgs-action@v1.3.0
       with:
         # Space delimited list of packages to install. Version can be specified optionally using APT command syntax of <name>=<version> (e.g. xdot=1.2-2).
-        packages: libnoise-dev libgtest-dev
+        packages: libgtest-dev
 
     - uses: actions/checkout@v3
 
