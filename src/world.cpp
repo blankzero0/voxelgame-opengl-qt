@@ -48,9 +48,10 @@ const Chunk* World::chunk_at(const ChunkPosition& position) const
 
 void World::add_chunk(const ChunkPosition& position, Chunk&& chunk)
 {
-	std::lock_guard guard(chunks_mutex);
+	std::lock_guard chunks_guard(chunks_mutex);
 	assert(!chunks.contains(position));
 	auto it = chunks.insert({position, std::move(chunk)}).first;
+	std::lock_guard listeners_guard(listeners_mutex);
 	for (auto& listener : chunk_added_listeners) {
 		listener(it->first, it->second);
 	}
@@ -58,6 +59,7 @@ void World::add_chunk(const ChunkPosition& position, Chunk&& chunk)
 
 void World::add_chunk_added_listener(std::function<void(const ChunkPosition&, const Chunk&)>&& chunk_added_listener)
 {
+	std::lock_guard guard(listeners_mutex);
 	World::chunk_added_listeners.push_back(std::move(chunk_added_listener));
 }
 

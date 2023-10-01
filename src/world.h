@@ -20,6 +20,7 @@ private:
 	std::unordered_map<ChunkPosition, Chunk> chunks;
 	mutable std::mutex chunks_mutex;
 	std::vector<std::function<void(const ChunkPosition&, const Chunk&)>> chunk_added_listeners;
+	mutable std::mutex listeners_mutex;
 };
 
 
