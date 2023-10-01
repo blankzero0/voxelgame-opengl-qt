@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
 #ifndef NDEBUG
 	format.setOption(QSurfaceFormat::DebugContext);
 #endif
+	format.setDepthBufferSize(24);
 	format.setSwapInterval(0);
 	format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
 	format.setSamples(4);
