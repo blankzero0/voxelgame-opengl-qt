@@ -65,7 +65,7 @@ void Window::paintGL()
 	auto looking_at = raycast(world, eye_position, look_direction, 10);
 	if (looking_at) {
 		glClear(GL_DEPTH_BUFFER_BIT);
-		selection_renderer->set_position(looking_at->first);
+		selection_renderer->set_position(std::get<0>(*looking_at));
 		selection_renderer->render();
 	}
 

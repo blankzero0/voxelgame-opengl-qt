@@ -29,7 +29,7 @@ void PhysicsLoop::tick(float delta_time)
 
 		if (looking_at) {
 			if (input.is_place() && place_cooldown == 0) {
-				auto [position, direction] = *looking_at;
+				auto [position, direction, _] = *looking_at;
 
 				switch (direction) {
 				case X_POS:
@@ -57,7 +57,7 @@ void PhysicsLoop::tick(float delta_time)
 				world.set_block(position, player_placed_block);
 				place_cooldown = 0.2;
 			} else if (input.is_destroy() && destroy_cooldown == 0) {
-				world.set_block(looking_at->first, player_unplaced_block);
+				world.set_block(std::get<0>(*looking_at), player_unplaced_block);
 				destroy_cooldown = 0.2;
 			}
 		}
