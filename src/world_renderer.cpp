@@ -54,14 +54,17 @@ WorldRenderer::WorldRenderer(World& world, ChunkMeshVertexBuilder& chunk_mesh_ve
 	vertex_array_object.create();
 
 	{
-		std::array<uint32_t, Chunk::size * Chunk::size * Chunk::size * 6 * 6> indices;
-		for (size_t i = 0, j = 0; i < indices.size(); i+=6, j+=4) {
-			indices[i+0] = j+0;
-			indices[i+1] = j+1;
-			indices[i+2] = j+2;
-			indices[i+3] = j+2;
-			indices[i+4] = j+3;
-			indices[i+5] = j+0;
+		constexpr size_t max_face_count = Chunk::size * Chunk::size * Chunk::size * 6;
+		constexpr size_t max_index_count = max_face_count * 6;
+		std::vector<uint32_t> indices;
+		indices.reserve(max_index_count);
+		for (size_t i = 0, j = 0; i < max_face_count; i++, j+=4) {
+			indices.push_back(j+0);
+			indices.push_back(j+1);
+			indices.push_back(j+2);
+			indices.push_back(j+2);
+			indices.push_back(j+3);
+			indices.push_back(j+0);
 		}
 		element_buffer.create();
 		element_buffer.bind();
