@@ -19,7 +19,7 @@ float Player::pitch_degrees() const
 }
 
 Player::Player(const Point& position)
-		: position(position), yaw(0), pitch(0)
+		: position(position), yaw(0), pitch(0), velocity{0, 0, 0}
 {}
 
 void Player::add_position_listener(std::function<void(const Point&)>&& listener)

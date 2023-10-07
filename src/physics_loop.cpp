@@ -5,7 +5,7 @@
 PhysicsLoop::PhysicsLoop(Player& player, const Input& input, World& world)
 		: player(player), input(input), thread(std::bind_front(&PhysicsLoop::run, this)), world(world)
 {
-}
+	}
 
 void PhysicsLoop::run(const std::stop_token& stop_token)
 {
@@ -67,8 +67,8 @@ void PhysicsLoop::tick(float delta_time)
 	if (input.is_boost())
 		movement_speed *= 10;
 
-	Vector forward = rotation_to_forward_vector(player.get_yaw(), player.get_pitch());
-	Vector right = rotation_to_right_vector(player.get_yaw(), player.get_pitch());
+	Vector forward = rotation_to_forward_vector(player.get_yaw(), 0);
+	Vector right = rotation_to_right_vector(player.get_yaw(), 0);
 	constexpr Vector up{0, 1, 0};
 
 	Vector move_dir{};
@@ -81,10 +81,82 @@ void PhysicsLoop::tick(float delta_time)
 		move_dir += right;
 	if (input.is_left())
 		move_dir -= right;
-	if (input.is_up())
-		move_dir += up;
-	if (input.is_down())
-		move_dir -= up;
 
-	player.set_position(player.get_position() + delta_time * movement_speed * move_dir);
+	Point player_position = player.get_position();
+
+	constexpr Vector graivitational_acceleration{0, -9.81, 0};
+	Vector player_mechanical_velocity = player.get_velocity() + delta_time * graivitational_acceleration;
+
+	constexpr float ground_contact_distance = 0.125;
+	constexpr float jump_velocity = 5;
+	if (input.is_up() && player_mechanical_velocity.y < 0 && raycast(world, player_position, -up, ground_contact_distance))
+		player_mechanical_velocity.y = jump_velocity;
+
+
+	Vector player_controlled_velocity = player_mechanical_velocity + movement_speed * move_dir;
+
+	std::array corners = {
+		Point{player_position.x - Player::width / 2, player_position.y, player_position.z - Player::width / 2},
+		Point{player_position.x + Player::width / 2, player_position.y, player_position.z - Player::width / 2},
+		Point{player_position.x - Player::width / 2, player_position.y, player_position.z + Player::width / 2},
+		Point{player_position.x + Player::width / 2, player_position.y, player_position.z + Player::width / 2},
+		Point{player_position.x - Player::width / 2, player_position.y + Player::height / 2, player_position.z - Player::width / 2},
+		Point{player_position.x + Player::width / 2, player_position.y + Player::height / 2, player_position.z - Player::width / 2},
+		Point{player_position.x - Player::width / 2, player_position.y + Player::height / 2, player_position.z + Player::width / 2},
+		Point{player_position.x + Player::width / 2, player_position.y + Player::height / 2, player_position.z + Player::width / 2},
+		Point{player_position.x - Player::width / 2, player_position.y + Player::height, player_position.z - Player::width / 2},
+		Point{player_position.x + Player::width / 2, player_position.y + Player::height, player_position.z - Player::width / 2},
+		Point{player_position.x - Player::width / 2, player_position.y + Player::height, player_position.z + Player::width / 2},
+		Point{player_position.x + Player::width / 2, player_position.y + Player::height, player_position.z + Player::width / 2},
+	};
+
+	Vector player_position_delta = delta_time * player_controlled_velocity;
+
+	while (true) {
+		bool collides = false;
+		float collision_distance = 1;
+		BlockDirection collision_direction;
+		for (const Point& corner : corners) {
+			auto collision = raycast(world, corner, player_position_delta, collision_distance);
+			if (collision) {
+				collides = true;
+				auto [_, direction, distance] = *collision;
+				collision_direction = direction;
+				collision_distance = distance;
+			}
+		}
+
+		if (!collides) {
+			break;
+		}
+
+		switch (collision_direction)
+		{
+		case BlockDirection::X_NEG:
+		case BlockDirection::X_POS:
+			player_position_delta.x *= collision_distance;
+			player_mechanical_velocity.x = 0;
+			break;
+		case BlockDirection::Y_NEG:
+		case BlockDirection::Y_POS:
+			player_position_delta.y *= collision_distance;
+			player_mechanical_velocity.y = 0;
+			break;
+		case BlockDirection::Z_NEG:
+		case BlockDirection::Z_POS:
+			player_position_delta.z *= collision_distance;
+			player_mechanical_velocity.z = 0;
+			break;
+		case BlockDirection::NONE:
+			player_mechanical_velocity = Vector{0, 0, 0};
+			break;
+		}
+
+		if (collision_direction == BlockDirection::NONE) {
+			break;
+		}
+	}
+
+	player.set_position(player_position + player_position_delta);
+	player.set_velocity(player_mechanical_velocity);
 }

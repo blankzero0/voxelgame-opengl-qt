@@ -7,6 +7,9 @@
 class Player {
 public:
 	static constexpr float eye_height = 1.7;
+	static constexpr float height = 1.8;
+	static constexpr float width = 0.5;
+
 	explicit Player(const Point& position);
 	void turn(float delta_yaw, float delta_pitch);
 
@@ -39,10 +42,21 @@ public:
 
 	void add_position_listener(std::function<void(const Point&)>&& listener);
 
+	[[nodiscard]] const Vector& get_velocity() const
+	{
+		return velocity;
+	}
+
+	void set_velocity(const Vector& velocity)
+	{
+		Player::velocity = velocity;
+	}
+
 private:
 	Point position;
 	float yaw;
 	float pitch;
+	Vector velocity;
 
 	std::vector<std::function<void(const Point&)>> position_listeners;
 };
