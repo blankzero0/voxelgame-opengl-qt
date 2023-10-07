@@ -23,7 +23,7 @@ public:
 
 private:
 	GLuint vertex_buffer_id;
-	GLsizei vertex_count;
+	GLsizei index_count;
 };
 
 

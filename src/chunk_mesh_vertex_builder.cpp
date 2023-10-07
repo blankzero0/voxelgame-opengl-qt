@@ -9,9 +9,7 @@ void add_front_face(std::vector<Vertex>& vertices, uint8_t texture_index, float 
 	vertices.push_back({x + 0, y + 0, z + 1, 0, 0, texture_index, 0, 0, 1});
 	vertices.push_back({x + 1, y + 0, z + 1, 1, 0, texture_index, 0, 0, 1});
 	vertices.push_back({x + 1, y + 1, z + 1, 1, 1, texture_index, 0, 0, 1});
-	vertices.push_back({x + 1, y + 1, z + 1, 1, 1, texture_index, 0, 0, 1});
 	vertices.push_back({x + 0, y + 1, z + 1, 0, 1, texture_index, 0, 0, 1});
-	vertices.push_back({x + 0, y + 0, z + 1, 0, 0, texture_index, 0, 0, 1});
 }
 
 void add_right_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
@@ -19,9 +17,7 @@ void add_right_face(std::vector<Vertex>& vertices, const uint8_t texture_index, 
 	vertices.push_back({x + 1, y + 0, z + 1, 0, 0, texture_index, 1, 0, 0});
 	vertices.push_back({x + 1, y + 0, z + 0, 1, 0, texture_index, 1, 0, 0});
 	vertices.push_back({x + 1, y + 1, z + 0, 1, 1, texture_index, 1, 0, 0});
-	vertices.push_back({x + 1, y + 1, z + 0, 1, 1, texture_index, 1, 0, 0});
 	vertices.push_back({x + 1, y + 1, z + 1, 0, 1, texture_index, 1, 0, 0});
-	vertices.push_back({x + 1, y + 0, z + 1, 0, 0, texture_index, 1, 0, 0});
 }
 
 void add_back_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
@@ -29,9 +25,7 @@ void add_back_face(std::vector<Vertex>& vertices, const uint8_t texture_index, f
 	vertices.push_back({x + 1, y + 0, z + 0, 0, 0, texture_index, 0, 0, -1});
 	vertices.push_back({x + 0, y + 0, z + 0, 1, 0, texture_index, 0, 0, -1});
 	vertices.push_back({x + 0, y + 1, z + 0, 1, 1, texture_index, 0, 0, -1});
-	vertices.push_back({x + 0, y + 1, z + 0, 1, 1, texture_index, 0, 0, -1});
 	vertices.push_back({x + 1, y + 1, z + 0, 0, 1, texture_index, 0, 0, -1});
-	vertices.push_back({x + 1, y + 0, z + 0, 0, 0, texture_index, 0, 0, -1});
 }
 
 void add_left_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
@@ -39,9 +33,7 @@ void add_left_face(std::vector<Vertex>& vertices, const uint8_t texture_index, f
 	vertices.push_back({x + 0, y + 0, z + 0, 0, 0, texture_index, -1, 0, 0});
 	vertices.push_back({x + 0, y + 0, z + 1, 1, 0, texture_index, -1, 0, 0});
 	vertices.push_back({x + 0, y + 1, z + 1, 1, 1, texture_index, -1, 0, 0});
-	vertices.push_back({x + 0, y + 1, z + 1, 1, 1, texture_index, -1, 0, 0});
 	vertices.push_back({x + 0, y + 1, z + 0, 0, 1, texture_index, -1, 0, 0});
-	vertices.push_back({x + 0, y + 0, z + 0, 0, 0, texture_index, -1, 0, 0});
 }
 
 void add_top_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
@@ -49,9 +41,7 @@ void add_top_face(std::vector<Vertex>& vertices, const uint8_t texture_index, fl
 	vertices.push_back({x + 0, y + 1, z + 1, 0, 0, texture_index, 0, 1, 0});
 	vertices.push_back({x + 1, y + 1, z + 1, 1, 0, texture_index, 0, 1, 0});
 	vertices.push_back({x + 1, y + 1, z + 0, 1, 1, texture_index, 0, 1, 0});
-	vertices.push_back({x + 1, y + 1, z + 0, 1, 1, texture_index, 0, 1, 0});
 	vertices.push_back({x + 0, y + 1, z + 0, 0, 1, texture_index, 0, 1, 0});
-	vertices.push_back({x + 0, y + 1, z + 1, 0, 0, texture_index, 0, 1, 0});
 }
 
 void add_bottom_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
@@ -59,9 +49,7 @@ void add_bottom_face(std::vector<Vertex>& vertices, const uint8_t texture_index,
 	vertices.push_back({x + 0, y + 0, z + 0, 0, 0, texture_index, 0, -1, 0});
 	vertices.push_back({x + 1, y + 0, z + 0, 1, 0, texture_index, 0, -1, 0});
 	vertices.push_back({x + 1, y + 0, z + 1, 1, 1, texture_index, 0, -1, 0});
-	vertices.push_back({x + 1, y + 0, z + 1, 1, 1, texture_index, 0, -1, 0});
 	vertices.push_back({x + 0, y + 0, z + 1, 0, 1, texture_index, 0, -1, 0});
-	vertices.push_back({x + 0, y + 0, z + 0, 0, 0, texture_index, 0, -1, 0});
 }
 
 void add_block_faces(

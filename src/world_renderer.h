@@ -43,6 +43,7 @@ private:
 	QOpenGLShaderProgram chunk_shader;
 	QOpenGLTexture texture;
 	QOpenGLVertexArrayObject vertex_array_object;
+	QOpenGLBuffer element_buffer;
 	std::unique_ptr<std::array<ChunkMesh, (view_distance * 2 + 1) * (view_distance * 2 + 1) * (view_distance * 2 + 1)>> chunk_meshes;
 	multimap3d<int16_t, MeshWrapper> mesh_3d_map;
 	std::unordered_map<ChunkPosition, std::reference_wrapper<ChunkMesh>> mesh_position_map;

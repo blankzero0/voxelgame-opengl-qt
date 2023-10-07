@@ -7,7 +7,7 @@
 
 WorldRenderer::WorldRenderer(World& world, ChunkMeshVertexBuilder& chunk_mesh_vertex_builder)
 		: texture(QOpenGLTexture::Target2DArray), world(world), chunk_mesh_vertex_builder(chunk_mesh_vertex_builder), chunk_surrounder(chunk_mesh_vertex_builder, *this),
-		chunk_meshes(std::make_unique<decltype(chunk_meshes)::element_type>()), updating_vertex_builder(world)
+		chunk_meshes(std::make_unique<decltype(chunk_meshes)::element_type>()), updating_vertex_builder(world), element_buffer(QOpenGLBuffer::IndexBuffer)
 {
 	QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
 
@@ -53,7 +53,24 @@ WorldRenderer::WorldRenderer(World& world, ChunkMeshVertexBuilder& chunk_mesh_ve
 
 	vertex_array_object.create();
 
+	{
+		std::array<uint32_t, Chunk::size * Chunk::size * Chunk::size * 6 * 6> indices;
+		for (size_t i = 0, j = 0; i < indices.size(); i+=6, j+=4) {
+			indices[i+0] = j+0;
+			indices[i+1] = j+1;
+			indices[i+2] = j+2;
+			indices[i+3] = j+2;
+			indices[i+4] = j+3;
+			indices[i+5] = j+0;
+		}
+		element_buffer.create();
+		element_buffer.bind();
+		element_buffer.allocate(indices.data(), indices.size() * sizeof(decltype(indices)::value_type));
+		element_buffer.release();
+	}
+
 	vertex_array_object.bind();
+	element_buffer.bind();
 	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
 	glVertexAttribFormat(1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, texture_coords));
 	glVertexAttribIFormat(2, 1, GL_BYTE, offsetof(Vertex, texture_index));

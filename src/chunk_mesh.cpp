@@ -2,7 +2,7 @@
 #include "vertex.h"
 
 ChunkMesh::ChunkMesh()
-		: vertex_count(0)
+		: index_count(0)
 {
 	QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
 
@@ -10,7 +10,7 @@ ChunkMesh::ChunkMesh()
 }
 
 ChunkMesh::ChunkMesh(ChunkMesh&& other) noexcept
-		: vertex_count(std::exchange(other.vertex_count, 0)), vertex_buffer_id(std::exchange(other.vertex_buffer_id, 0))
+		: index_count(std::exchange(other.index_count, 0)), vertex_buffer_id(std::exchange(other.vertex_buffer_id, 0))
 {
 	QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
 }
@@ -18,12 +18,13 @@ ChunkMesh::ChunkMesh(ChunkMesh&& other) noexcept
 void ChunkMesh::draw()
 {
 	glBindVertexBuffer(0, vertex_buffer_id, 0, sizeof(Vertex));
-	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+	glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void*>(0));
 }
 
 void ChunkMesh::update(const std::vector<Vertex>& vertices)
 {
-	vertex_count = static_cast<GLsizei>(vertices.size());
+	size_t vertex_count = vertices.size();
+	index_count = static_cast<GLsizei>(vertex_count / 4 * 6);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
 
@@ -35,7 +36,7 @@ void ChunkMesh::update(const std::vector<Vertex>& vertices)
 
 void ChunkMesh::clear()
 {
-	vertex_count = 0;
+	index_count = 0;
 }
 
 ChunkMesh::~ChunkMesh()
