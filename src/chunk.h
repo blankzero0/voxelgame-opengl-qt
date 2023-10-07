@@ -23,6 +23,7 @@ extern const Block& player_unplaced_block;
 
 class Chunk {
 public:
+	Chunk();
 	explicit Chunk(const ChunkPosition& position);
 	static constexpr size_t size = 32;
 

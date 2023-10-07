@@ -106,6 +106,11 @@ Blocks make_blocks(const ChunkPosition& position)
 
 }
 
+Chunk::Chunk()
+		: blocks(make_empty())
+{
+}
+
 Chunk::Chunk(const ChunkPosition& position)
 		: blocks(make_blocks(position))
 {
