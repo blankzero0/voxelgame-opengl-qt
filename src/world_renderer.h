@@ -15,10 +15,11 @@
 #include "chunk_mesh_manager.h"
 #include "water_mesh.h"
 #include "water_mesh_vertex_builder.h"
+#include "player.h"
 
 class WorldRenderer : private QOpenGLFunctions_4_5_Core {
 public:
-	WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor);
+	WorldRenderer(World& world, Player& player, TimeBoundedGLExecutor& gl_executor);
 	void render();
 	void set_view_projection(const QMatrix4x4& view_projection);
 	void set_center(const Point& center_point);

@@ -28,7 +28,7 @@ void Window::initializeGL()
 	glCullFace(GL_BACK);
 	glClearColor(113 / 255.0, 188 / 255.0, 225 / 255.0, 1);
 
-	world_renderer.emplace(world, time_bounded_gl_executor);
+	world_renderer.emplace(world, player, time_bounded_gl_executor);
 	selection_renderer.emplace();
 }
 

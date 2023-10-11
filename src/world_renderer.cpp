@@ -5,7 +5,7 @@
 #include "water_vertex.h"
 
 
-WorldRenderer::WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor)
+WorldRenderer::WorldRenderer(World& world, Player& player, TimeBoundedGLExecutor& gl_executor)
 		: texture(QOpenGLTexture::Target2DArray), world(world), element_buffer(QOpenGLBuffer::IndexBuffer),
 		block_vertex_builder(world), updating_block_vertex_builder(world),
 		block_update_connector(world, updating_block_vertex_builder),
@@ -108,6 +108,19 @@ WorldRenderer::WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor)
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	water_vao.release();
+
+	player.add_position_listener([&gl_executor, &chunk_shader = chunk_shader, &water_shader = water_shader](const Point& pos){
+		Point eye_pos = pos + Vector{0, Player::eye_height, 0};
+		gl_executor.add_task([&chunk_shader, &water_shader, eye_pos](){
+			chunk_shader.bind();
+			chunk_shader.setUniformValue("eye_pos", eye_pos.x, eye_pos.y, eye_pos.z);
+			chunk_shader.release();
+
+			water_shader.bind();
+			water_shader.setUniformValue("eye_pos", eye_pos.x, eye_pos.y, eye_pos.z);
+			water_shader.release();
+		});
+	});
 }
 
 void WorldRenderer::render()

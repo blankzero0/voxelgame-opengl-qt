@@ -93,7 +93,7 @@ std::pair<Blocks, std::vector<WaterColumn>> make_terrain(const ChunkPosition& po
 				blocks[cx][cz][cy] = select_block(x, z, y, terrain_height);
 			}
 
-			if (terrain_height < 0) {
+			if (position.y <= 0 && terrain_height < 0) {
 				int64_t chunk_bottom = static_cast<int64_t>(position.y * Chunk::size);
 				int64_t chunk_top = chunk_bottom + static_cast<int64_t>(Chunk::size);
 				uint8_t base = terrain_height - chunk_bottom + 1;
