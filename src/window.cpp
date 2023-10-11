@@ -23,6 +23,8 @@ void Window::initializeGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
 	glClearColor(113 / 255.0, 188 / 255.0, 225 / 255.0, 1);
 

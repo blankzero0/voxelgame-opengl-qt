@@ -1,39 +1,38 @@
-#ifndef VOXELGAME_OPENGL_QT_BLOCK_MESH_VERTEX_BUILDER_H
-#define VOXELGAME_OPENGL_QT_BLOCK_MESH_VERTEX_BUILDER_H
+#ifndef VOXELGAME_OPENGL_QT_WATER_MESH_VERTEX_BUILDER_H
+#define VOXELGAME_OPENGL_QT_WATER_MESH_VERTEX_BUILDER_H
 
 
 #include <thread>
 #include "geometry.h"
-#include "block_vertex.h"
 #include "world.h"
 #include "blocking_queue.h"
 #include "chunk_surrounder.h"
-#include "vertex_producer.h"
+#include "water_vertex.h"
 #include "vertex_builder.h"
 #include "update_connector.h"
 
-class BlockMeshVertexBuilder : public VertexBuilder<BlockVertex> {
+class WaterMeshVertexBuilder : public VertexBuilder<WaterVertex> {
 public:
-	class BlockUpdateConnector : public UpdateConnector {
+	class WaterUpdateConnector : public UpdateConnector {
 	public:
-		BlockUpdateConnector(World& world, BlockMeshVertexBuilder& vertex_builder);
+		WaterUpdateConnector(World& world, WaterMeshVertexBuilder& vertex_builder);
 
 		void connect(const ChunkPosition& position) override;
 		void disconnect(const ChunkPosition& position) override;
 
 	private:
 		World& world;
-		BlockMeshVertexBuilder& vertex_builder;
+		WaterMeshVertexBuilder& vertex_builder;
 	};
 
-	explicit BlockMeshVertexBuilder(World& world);
+	explicit WaterMeshVertexBuilder(World& world);
 
-	BlockMeshVertexBuilder(BlockMeshVertexBuilder&) = delete;
-	BlockMeshVertexBuilder(BlockMeshVertexBuilder&&) = delete;
-	BlockMeshVertexBuilder& operator=(BlockMeshVertexBuilder&) = delete;
-	BlockMeshVertexBuilder& operator=(BlockMeshVertexBuilder&&) = delete;
+	WaterMeshVertexBuilder(WaterMeshVertexBuilder&) = delete;
+	WaterMeshVertexBuilder(WaterMeshVertexBuilder&&) = delete;
+	WaterMeshVertexBuilder& operator=(WaterMeshVertexBuilder&) = delete;
+	WaterMeshVertexBuilder& operator=(WaterMeshVertexBuilder&&) = delete;
 
-	~BlockMeshVertexBuilder() override;
+	~WaterMeshVertexBuilder() override;
 
 	void request_chunk(const ChunkPosition& position) override;
 	void supply_chunk(const ChunkPosition& position, const Chunk& chunk);
@@ -49,4 +48,4 @@ private:
 };
 
 
-#endif //VOXELGAME_OPENGL_QT_BLOCK_MESH_VERTEX_BUILDER_H
+#endif //VOXELGAME_OPENGL_QT_WATER_MESH_VERTEX_BUILDER_H

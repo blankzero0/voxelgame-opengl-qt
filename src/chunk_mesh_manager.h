@@ -10,11 +10,12 @@
 #include "time_bounded_gl_executor.h"
 #include "vertex_builder.h"
 #include "world.h"
+#include "update_connector.h"
 
 template <typename Mesh, typename Vertex>
 class ChunkMeshManager : CenterChangeListener, VertexConsumer<Vertex> {
 public:
-	ChunkMeshManager(size_t view_distance, TimeBoundedGLExecutor& gl_executor, VertexBuilder<Vertex>& vertex_builder, VertexBuilder<Vertex>& update_vertex_builder, const World& world);
+	ChunkMeshManager(size_t view_distance, TimeBoundedGLExecutor& gl_executor, VertexBuilder<Vertex>& vertex_builder, VertexBuilder<Vertex>& update_vertex_builder, UpdateConnector& update_connector);
 
 	void set_center(const Point& center_point);
 
@@ -26,7 +27,7 @@ private:
 
 		ChunkPosition position;
 		Mesh& mesh;
-		const Chunk& chunk;
+		UpdateConnector& update_connector;
 		std::vector<std::reference_wrapper<Mesh>>& free_list;
 		std::unordered_map<ChunkPosition, std::reference_wrapper<Mesh>>& mesh_position_map;
 	};
@@ -45,7 +46,7 @@ private:
 	TimeBoundedGLExecutor& gl_executor;
 	std::optional<ChunkPosition> current_center;
 	ChunkSurrounder chunk_surrounder;
-	const World& world;
+	UpdateConnector& update_connector;
 	VertexBuilder<Vertex>& update_vertex_builder;
 	UpdateVertexConsumer update_vertex_consumer;
 

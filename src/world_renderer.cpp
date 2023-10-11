@@ -6,8 +6,13 @@
 
 
 WorldRenderer::WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor)
-		: texture(QOpenGLTexture::Target2DArray), world(world), element_buffer(QOpenGLBuffer::IndexBuffer), block_vertex_builder(world), updating_block_vertex_builder(world),
-		block_chunk_mesh_manager(view_distance, gl_executor, block_vertex_builder, updating_block_vertex_builder, world)
+		: texture(QOpenGLTexture::Target2DArray), world(world), element_buffer(QOpenGLBuffer::IndexBuffer),
+		block_vertex_builder(world), updating_block_vertex_builder(world),
+		block_update_connector(world, updating_block_vertex_builder),
+		block_chunk_mesh_manager(view_distance, gl_executor, block_vertex_builder, updating_block_vertex_builder, block_update_connector),
+		water_vertex_builder(world), updating_water_vertex_builder(world),
+		water_update_connector(world, updating_water_vertex_builder),
+		water_chunk_mesh_manager(view_distance, gl_executor, water_vertex_builder, updating_water_vertex_builder, water_update_connector)
 {
 	QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
 
@@ -57,8 +62,6 @@ WorldRenderer::WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor)
 	texture.setWrapMode(QOpenGLTexture::ClampToEdge);
 	texture.generateMipMaps();
 
-	blocks_vao.create();
-
 	{
 		constexpr size_t max_face_count = Chunk::size * Chunk::size * Chunk::size * 6;
 		constexpr size_t max_index_count = max_face_count * 6;
@@ -78,6 +81,7 @@ WorldRenderer::WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor)
 		element_buffer.release();
 	}
 
+	blocks_vao.create();
 	blocks_vao.bind();
 	element_buffer.bind();
 	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(BlockVertex, position));
@@ -93,6 +97,17 @@ WorldRenderer::WorldRenderer(World& world, TimeBoundedGLExecutor& gl_executor)
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
 	blocks_vao.release();
+
+	water_vao.create();
+	water_vao.bind();
+	element_buffer.bind();
+	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, offsetof(BlockVertex, position));
+	glVertexAttribFormat(1, 2, GL_FLOAT, GL_FALSE, offsetof(BlockVertex, texture_coords));
+	glVertexAttribBinding(0, 0);
+	glVertexAttribBinding(1, 0);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	water_vao.release();
 }
 
 void WorldRenderer::render()
@@ -100,14 +115,20 @@ void WorldRenderer::render()
 	texture.bind();
 
 	chunk_shader.bind();
-
 	blocks_vao.bind();
-	for (auto& renderer: block_chunk_mesh_manager.get_meshes()) {
-		renderer.draw();
+	for (auto& mesh: block_chunk_mesh_manager.get_meshes()) {
+		mesh.draw();
 	}
 	blocks_vao.release();
-
 	chunk_shader.release();
+
+	water_shader.bind();
+	water_vao.bind();
+	for (auto& mesh: water_chunk_mesh_manager.get_meshes()) {
+		mesh.draw();
+	}
+	water_vao.release();
+	water_shader.release();
 
 	texture.release();
 }
@@ -126,4 +147,5 @@ void WorldRenderer::set_view_projection(const QMatrix4x4& view_projection)
 void WorldRenderer::set_center(const Point& center_point)
 {
 	block_chunk_mesh_manager.set_center(center_point);
+	water_chunk_mesh_manager.set_center(center_point);
 }

@@ -25,7 +25,6 @@ add_executable(voxelgame_opengl_qt
         src/blocks/grass_block.cpp src/blocks/grass_block.h
         src/blocks/sand_block.cpp src/blocks/sand_block.h
         src/blocks/stone_block.cpp src/blocks/stone_block.h
-        src/blocks/water_block.cpp src/blocks/water_block.h
         src/chunk.cpp src/chunk.h
         src/chunk_mesh_manager.cpp src/chunk_mesh_manager.h
         src/chunk_surrounder.cpp src/chunk_surrounder.h
@@ -42,10 +41,15 @@ add_executable(voxelgame_opengl_qt
         src/vertex_builder.h
         src/vertex_consumer.h
         src/vertex_producer.h
+        src/water_column.cpp src/water_column.h
+        src/water_mesh.cpp src/water_mesh.h
+        src/water_mesh_vertex_builder.cpp src/water_mesh_vertex_builder.h
+        src/water_vertex.h
         src/window.cpp src/window.h
         src/world.cpp src/world.h
         src/world_builder.cpp src/world_builder.h
         src/world_renderer.cpp src/world_renderer.h
+        src/update_connector.h
 )
 target_link_libraries(voxelgame_opengl_qt PRIVATE Qt6::Core Qt6::Gui Qt6::OpenGL)
 
@@ -60,7 +64,6 @@ add_executable(ray_tests
         src/blocks/grass_block.cpp src/blocks/grass_block.h
         src/blocks/sand_block.cpp src/blocks/sand_block.h
         src/blocks/stone_block.cpp src/blocks/stone_block.h
-        src/blocks/water_block.cpp src/blocks/water_block.h
         src/chunk.cpp src/chunk.h
         src/geometry.cpp src/geometry.h
         src/noise.cpp src/noise.h

@@ -7,13 +7,13 @@
 #include <functional>
 #include "blocks/block.h"
 #include "geometry.h"
+#include "water_column.h"
 
 
 enum BlockIndex : uint8_t {
 	air = 0,
 	grass,
 	stone,
-	water,
 	sand,
 	cobblestone,
 };
@@ -29,11 +29,14 @@ public:
 
 	[[nodiscard]] const Block& get_block(const ChunkCoords& coords) const;
 	void set_block(const ChunkCoords& coords, const Block& block);
-	void set_changed_listener(const std::function<void()>& changed_listener) const;
-	void clear_changed_listener() const;
+	void set_blocks_changed_listener(const std::function<void()>& changed_listener) const;
+	void clear_blocks_changed_listener() const;
+	const std::vector<WaterColumn>& get_water() const;
 private:
+	explicit Chunk(const std::pair<std::array<std::array<std::array<BlockIndex, size>, size>, size>, std::vector<WaterColumn>>&);
 	std::array<std::array<std::array<BlockIndex, size>, size>, size> blocks;
-	mutable std::function<void()> changed_listener;
+	std::vector<WaterColumn> water;
+	mutable std::function<void()> blocks_changed_listener;
 };
 
 

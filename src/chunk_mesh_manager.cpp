@@ -1,8 +1,8 @@
 #include "chunk_mesh_manager.h"
 
 template<typename Mesh, typename Vertex>
-ChunkMeshManager<Mesh, Vertex>::ChunkMeshManager(size_t view_distance, TimeBoundedGLExecutor& gl_executor, VertexBuilder<Vertex>& vertex_builder, VertexBuilder<Vertex>& update_vertex_builder, const World& world)
-		: view_distance(view_distance), gl_executor(gl_executor), chunk_surrounder(view_distance, vertex_builder, *this), world(world), update_vertex_builder(update_vertex_builder), update_vertex_consumer{gl_executor, mesh_position_map}
+ChunkMeshManager<Mesh, Vertex>::ChunkMeshManager(size_t view_distance, TimeBoundedGLExecutor& gl_executor, VertexBuilder<Vertex>& vertex_builder, VertexBuilder<Vertex>& update_vertex_builder, UpdateConnector& update_connector)
+		: view_distance(view_distance), gl_executor(gl_executor), chunk_surrounder(view_distance, vertex_builder, *this), update_connector(update_connector), update_vertex_builder(update_vertex_builder), update_vertex_consumer{gl_executor, mesh_position_map}
 {
 	meshes.resize((view_distance * 2 + 1) * (view_distance * 2 + 1) * (view_distance * 2 + 1));
 
@@ -74,14 +74,9 @@ void ChunkMeshManager<Mesh, Vertex>::consume_vertices(std::pair<ChunkPosition, s
 
 		mesh_position_map.insert({pos, mesh});
 
-		const Chunk* chunk = world.chunk_at(pos);
-		assert(chunk);
+		update_connector.connect(pos);
 
-		chunk->set_changed_listener([&update_vertex_builder = update_vertex_builder, pos](){
-			update_vertex_builder.request_chunk(pos);
-		});
-
-		mesh_cleanup_map.insert({std::array{pos.x, pos.y, pos.z}, MeshWrapper{pos, mesh, *chunk, free_meshes, mesh_position_map}});
+		mesh_cleanup_map.insert({std::array{pos.x, pos.y, pos.z}, MeshWrapper{pos, mesh, update_connector, free_meshes, mesh_position_map}});
 	});
 }
 
@@ -89,7 +84,7 @@ template<typename Mesh, typename Vertex>
 void ChunkMeshManager<Mesh, Vertex>::MeshWrapper::free()
 {
 	mesh_position_map.erase(position);
-	chunk.clear_changed_listener();
+	update_connector.disconnect(position);
 	mesh.clear();
 	free_list.emplace_back(mesh);
 }
@@ -97,7 +92,6 @@ void ChunkMeshManager<Mesh, Vertex>::MeshWrapper::free()
 template<typename Mesh, typename Vertex>
 void ChunkMeshManager<Mesh, Vertex>::UpdateVertexConsumer::consume_vertices(std::pair<ChunkPosition, std::vector<Vertex>>&& pos_vertices)
 {
-
 	gl_executor.add_task([this, pos = std::move(pos_vertices.first), vertices = std::move(pos_vertices.second)](){
 		// TODO: thread safety
 
@@ -110,4 +104,7 @@ void ChunkMeshManager<Mesh, Vertex>::UpdateVertexConsumer::consume_vertices(std:
 
 #include "block_mesh.h"
 #include "block_vertex.h"
+#include "water_mesh.h"
+#include "water_vertex.h"
 template class ChunkMeshManager<BlockMesh, BlockVertex>;
+template class ChunkMeshManager<WaterMesh, WaterVertex>;

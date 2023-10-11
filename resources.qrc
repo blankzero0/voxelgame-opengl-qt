@@ -2,6 +2,8 @@
     <qresource prefix="/">
         <file>shaders/chunk/vertex.glsl</file>
         <file>shaders/chunk/fragment.glsl</file>
+        <file>shaders/water/vertex.glsl</file>
+        <file>shaders/water/fragment.glsl</file>
         <file>shaders/selection/vertex.glsl</file>
         <file>shaders/selection/fragment.glsl</file>
         <file>textures/grass.png</file>

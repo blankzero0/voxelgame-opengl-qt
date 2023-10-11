@@ -162,3 +162,23 @@ void BlockMeshVertexBuilder::on_chunk_added(const ChunkPosition& position, const
 
 	supply_chunk(position, chunk);
 }
+
+BlockMeshVertexBuilder::BlockUpdateConnector::BlockUpdateConnector(World& world, BlockMeshVertexBuilder& vertex_builder)
+		: world(world), vertex_builder(vertex_builder)
+{}
+
+void BlockMeshVertexBuilder::BlockUpdateConnector::connect(const ChunkPosition& position)
+{
+	const Chunk* chunk = world.chunk_at(position);
+	assert(chunk);
+	chunk->set_blocks_changed_listener([position, &vertex_builder = vertex_builder](){
+		vertex_builder.request_chunk(position);
+	});
+}
+
+void BlockMeshVertexBuilder::BlockUpdateConnector::disconnect(const ChunkPosition& position)
+{
+	const Chunk* chunk = world.chunk_at(position);
+	assert(chunk);
+	chunk->clear_blocks_changed_listener();
+}

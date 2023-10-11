@@ -13,6 +13,8 @@
 #include "multimap3d.h"
 #include "block_mesh_vertex_builder.h"
 #include "chunk_mesh_manager.h"
+#include "water_mesh.h"
+#include "water_mesh_vertex_builder.h"
 
 class WorldRenderer : private QOpenGLFunctions_4_5_Core {
 public:
@@ -25,15 +27,22 @@ private:
 	static constexpr int view_distance = 8;
 
 	World& world;
-	QOpenGLShaderProgram water_shader;
 	QOpenGLTexture texture;
-	QOpenGLVertexArrayObject blocks_vao;
 	QOpenGLBuffer element_buffer;
 	QOpenGLShaderProgram chunk_shader;
 
+	QOpenGLVertexArrayObject blocks_vao;
 	BlockMeshVertexBuilder block_vertex_builder;
 	BlockMeshVertexBuilder updating_block_vertex_builder;
+	BlockMeshVertexBuilder::BlockUpdateConnector block_update_connector;
 	ChunkMeshManager<BlockMesh, BlockVertex> block_chunk_mesh_manager;
+
+	QOpenGLShaderProgram water_shader;
+	QOpenGLVertexArrayObject water_vao;
+	WaterMeshVertexBuilder water_vertex_builder;
+	WaterMeshVertexBuilder updating_water_vertex_builder;
+	WaterMeshVertexBuilder::WaterUpdateConnector water_update_connector;
+	ChunkMeshManager<WaterMesh, WaterVertex> water_chunk_mesh_manager;
 };
 
 
