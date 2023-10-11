@@ -5,6 +5,7 @@
 #include <map>
 #include <utility>
 #include <array>
+#include <list>
 
 
 template<typename Key, typename T>

@@ -1,7 +1,7 @@
-#include "chunk_mesh.h"
-#include "vertex.h"
+#include "block_mesh.h"
+#include "block_vertex.h"
 
-ChunkMesh::ChunkMesh()
+BlockMesh::BlockMesh()
 		: index_count(0)
 {
 	QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
@@ -9,19 +9,19 @@ ChunkMesh::ChunkMesh()
 	glGenBuffers(1, &vertex_buffer_id);
 }
 
-ChunkMesh::ChunkMesh(ChunkMesh&& other) noexcept
+BlockMesh::BlockMesh(BlockMesh&& other) noexcept
 		: index_count(std::exchange(other.index_count, 0)), vertex_buffer_id(std::exchange(other.vertex_buffer_id, 0))
 {
 	QOpenGLFunctions_4_5_Core::initializeOpenGLFunctions();
 }
 
-void ChunkMesh::draw()
+void BlockMesh::draw()
 {
-	glBindVertexBuffer(0, vertex_buffer_id, 0, sizeof(Vertex));
+	glBindVertexBuffer(0, vertex_buffer_id, 0, sizeof(BlockVertex));
 	glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, static_cast<void*>(0));
 }
 
-void ChunkMesh::update(const std::vector<Vertex>& vertices)
+void BlockMesh::update(const std::vector<BlockVertex>& vertices)
 {
 	size_t vertex_count = vertices.size();
 	index_count = static_cast<GLsizei>(vertex_count / 4 * 6);
@@ -29,17 +29,17 @@ void ChunkMesh::update(const std::vector<Vertex>& vertices)
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertex_count, vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(BlockVertex) * vertex_count, vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ChunkMesh::clear()
+void BlockMesh::clear()
 {
 	index_count = 0;
 }
 
-ChunkMesh::~ChunkMesh()
+BlockMesh::~BlockMesh()
 {
 	glDeleteBuffers(1, &vertex_buffer_id);
 }

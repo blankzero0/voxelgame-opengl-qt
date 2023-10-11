@@ -26,11 +26,7 @@ void Window::initializeGL()
 	glCullFace(GL_BACK);
 	glClearColor(113 / 255.0, 188 / 255.0, 225 / 255.0, 1);
 
-	chunk_mesh_data_builder.emplace(world);
-	world_renderer.emplace(world, *chunk_mesh_data_builder);
-	chunk_mesh_data_builder->set_vertex_consumer([&world_renderer=world_renderer](auto&& v){
-		world_renderer->submit_mesh_vertices(std::forward<decltype(v)>(v));
-	});
+	world_renderer.emplace(world, time_bounded_gl_executor);
 	selection_renderer.emplace();
 }
 
@@ -57,6 +53,8 @@ void Window::paintGL()
 	world_renderer->set_view_projection(view_projection);
 	selection_renderer->set_view_projection(view_projection);
 
+	time_bounded_gl_executor.run();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	world_renderer->set_center(player_position);
 	world_renderer->render();
@@ -68,7 +66,6 @@ void Window::paintGL()
 		selection_renderer->set_position(std::get<0>(*looking_at));
 		selection_renderer->render();
 	}
-
 
 	last_render = current_render;
 }

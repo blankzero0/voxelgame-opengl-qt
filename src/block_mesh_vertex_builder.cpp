@@ -1,10 +1,10 @@
 #include <cassert>
-#include "chunk_mesh_vertex_builder.h"
+#include "block_mesh_vertex_builder.h"
 #include <functional>
 
 namespace {
 
-void add_front_face(std::vector<Vertex>& vertices, uint8_t texture_index, float x, float y, float z)
+void add_front_face(std::vector<BlockVertex>& vertices, uint8_t texture_index, float x, float y, float z)
 {
 	vertices.push_back({x + 0, y + 0, z + 1, 0, 0, texture_index, 0, 0, 1});
 	vertices.push_back({x + 1, y + 0, z + 1, 1, 0, texture_index, 0, 0, 1});
@@ -12,7 +12,7 @@ void add_front_face(std::vector<Vertex>& vertices, uint8_t texture_index, float 
 	vertices.push_back({x + 0, y + 1, z + 1, 0, 1, texture_index, 0, 0, 1});
 }
 
-void add_right_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
+void add_right_face(std::vector<BlockVertex>& vertices, const uint8_t texture_index, float x, float y, float z)
 {
 	vertices.push_back({x + 1, y + 0, z + 1, 0, 0, texture_index, 1, 0, 0});
 	vertices.push_back({x + 1, y + 0, z + 0, 1, 0, texture_index, 1, 0, 0});
@@ -20,7 +20,7 @@ void add_right_face(std::vector<Vertex>& vertices, const uint8_t texture_index, 
 	vertices.push_back({x + 1, y + 1, z + 1, 0, 1, texture_index, 1, 0, 0});
 }
 
-void add_back_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
+void add_back_face(std::vector<BlockVertex>& vertices, const uint8_t texture_index, float x, float y, float z)
 {
 	vertices.push_back({x + 1, y + 0, z + 0, 0, 0, texture_index, 0, 0, -1});
 	vertices.push_back({x + 0, y + 0, z + 0, 1, 0, texture_index, 0, 0, -1});
@@ -28,7 +28,7 @@ void add_back_face(std::vector<Vertex>& vertices, const uint8_t texture_index, f
 	vertices.push_back({x + 1, y + 1, z + 0, 0, 1, texture_index, 0, 0, -1});
 }
 
-void add_left_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
+void add_left_face(std::vector<BlockVertex>& vertices, const uint8_t texture_index, float x, float y, float z)
 {
 	vertices.push_back({x + 0, y + 0, z + 0, 0, 0, texture_index, -1, 0, 0});
 	vertices.push_back({x + 0, y + 0, z + 1, 1, 0, texture_index, -1, 0, 0});
@@ -36,7 +36,7 @@ void add_left_face(std::vector<Vertex>& vertices, const uint8_t texture_index, f
 	vertices.push_back({x + 0, y + 1, z + 0, 0, 1, texture_index, -1, 0, 0});
 }
 
-void add_top_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
+void add_top_face(std::vector<BlockVertex>& vertices, const uint8_t texture_index, float x, float y, float z)
 {
 	vertices.push_back({x + 0, y + 1, z + 1, 0, 0, texture_index, 0, 1, 0});
 	vertices.push_back({x + 1, y + 1, z + 1, 1, 0, texture_index, 0, 1, 0});
@@ -44,7 +44,7 @@ void add_top_face(std::vector<Vertex>& vertices, const uint8_t texture_index, fl
 	vertices.push_back({x + 0, y + 1, z + 0, 0, 1, texture_index, 0, 1, 0});
 }
 
-void add_bottom_face(std::vector<Vertex>& vertices, const uint8_t texture_index, float x, float y, float z)
+void add_bottom_face(std::vector<BlockVertex>& vertices, const uint8_t texture_index, float x, float y, float z)
 {
 	vertices.push_back({x + 0, y + 0, z + 0, 0, 0, texture_index, 0, -1, 0});
 	vertices.push_back({x + 1, y + 0, z + 0, 1, 0, texture_index, 0, -1, 0});
@@ -53,7 +53,7 @@ void add_bottom_face(std::vector<Vertex>& vertices, const uint8_t texture_index,
 }
 
 void add_block_faces(
-		std::vector<Vertex>& vertices, uint8_t texture_index, uint8_t texture_index_side, uint8_t texture_index_bottom, const Chunk& chunk, const ChunkCoords coords, float x,
+		std::vector<BlockVertex>& vertices, uint8_t texture_index, uint8_t texture_index_side, uint8_t texture_index_bottom, const Chunk& chunk, const ChunkCoords coords, float x,
 		float y, float z
 )
 {
@@ -72,11 +72,11 @@ void add_block_faces(
 		add_bottom_face(vertices, texture_index_bottom, x, y, z);
 }
 
-std::vector<Vertex> generate_vertices(const Chunk& chunk, const ChunkPosition& position)
+std::vector<BlockVertex> generate_vertices(const Chunk& chunk, const ChunkPosition& position)
 {
 	constexpr size_t vertices_per_cube = 6 * 6;
 
-	std::vector<Vertex> vertices;
+	std::vector<BlockVertex> vertices;
 	vertices.reserve(Chunk::size * Chunk::size * Chunk::size * vertices_per_cube);
 
 	for (uint8_t x = 0; x < Chunk::size; ++x) {
@@ -103,7 +103,7 @@ std::vector<Vertex> generate_vertices(const Chunk& chunk, const ChunkPosition& p
 
 }
 
-ChunkMeshVertexBuilder::ChunkMeshVertexBuilder(World& world)
+BlockMeshVertexBuilder::BlockMeshVertexBuilder(World& world)
 		: world(world)
 {
 	world.add_chunk_added_listener([this](const ChunkPosition& position, const Chunk& chunk) { this->on_chunk_added(position, chunk); });
@@ -111,10 +111,10 @@ ChunkMeshVertexBuilder::ChunkMeshVertexBuilder(World& world)
 	unsigned int thread_count = std::jthread::hardware_concurrency();
 	threads.reserve(thread_count);
 	for (size_t i = 0; i < thread_count; ++i)
-		threads.emplace_back(std::bind_front(&ChunkMeshVertexBuilder::run, this));
+		threads.emplace_back(std::bind_front(&BlockMeshVertexBuilder::run, this));
 }
 
-void ChunkMeshVertexBuilder::request_chunk(const ChunkPosition& position)
+void BlockMeshVertexBuilder::request_chunk(const ChunkPosition& position)
 {
 	const Chunk* chunk = world.chunk_at(position);
 	if (chunk) {
@@ -125,7 +125,7 @@ void ChunkMeshVertexBuilder::request_chunk(const ChunkPosition& position)
 	}
 }
 
-void ChunkMeshVertexBuilder::run(const std::stop_token& stop_token)
+void BlockMeshVertexBuilder::run(const std::stop_token& stop_token)
 {
 	while (!stop_token.stop_requested()) {
 		auto opt = queue.take();
@@ -133,24 +133,23 @@ void ChunkMeshVertexBuilder::run(const std::stop_token& stop_token)
 			continue;
 		auto [position, chunk] = *opt;
 
-		assert(vertex_consumer);
-		vertex_consumer({position, generate_vertices(chunk, position)});
+		get_vertex_consumer().consume_vertices({position, generate_vertices(chunk, position)});
 	}
 }
 
-ChunkMeshVertexBuilder::~ChunkMeshVertexBuilder()
+BlockMeshVertexBuilder::~BlockMeshVertexBuilder()
 {
 	for (auto& thread : threads) {
 		thread.request_stop();
 	}
 }
 
-void ChunkMeshVertexBuilder::supply_chunk(const ChunkPosition& position, const Chunk& chunk)
+void BlockMeshVertexBuilder::supply_chunk(const ChunkPosition& position, const Chunk& chunk)
 {
 	queue.put(std::pair<ChunkPosition, std::reference_wrapper<const Chunk>>(position, chunk));
 }
 
-void ChunkMeshVertexBuilder::on_chunk_added(const ChunkPosition& position, const Chunk& chunk)
+void BlockMeshVertexBuilder::on_chunk_added(const ChunkPosition& position, const Chunk& chunk)
 {
 	std::lock_guard guard(waiting_requests_mutex);
 
@@ -162,9 +161,4 @@ void ChunkMeshVertexBuilder::on_chunk_added(const ChunkPosition& position, const
 	waiting_requests.erase(it);
 
 	supply_chunk(position, chunk);
-}
-
-void ChunkMeshVertexBuilder::set_vertex_consumer(ChunkMeshVertexBuilder::VertexConsumer&& vertex_consumer)
-{
-	ChunkMeshVertexBuilder::vertex_consumer = std::move(vertex_consumer);
 }

@@ -12,11 +12,10 @@
 #include <QOpenGLTexture>
 #include <vector>
 #include "player.h"
-#include "chunk_mesh.h"
 #include "input.h"
 #include "world_renderer.h"
 #include "selection_renderer.h"
-#include "chunk_mesh_vertex_builder.h"
+#include "block_mesh_vertex_builder.h"
 
 class Window : public QOpenGLWindow, private QOpenGLFunctions_4_5_Core {
 public:
@@ -36,10 +35,11 @@ private:
 	World& world;
 	Player& player;
 	Input& input;
+	TimeBoundedGLExecutor time_bounded_gl_executor;
 	QOpenGLDebugLogger logger;
 	QMatrix4x4 projection_matrix;
 	std::optional<WorldRenderer> world_renderer;
-	std::optional<ChunkMeshVertexBuilder> chunk_mesh_data_builder;
+	std::optional<BlockMeshVertexBuilder> chunk_mesh_vertex_builder;
 	std::optional<SelectionRenderer> selection_renderer;
 	std::chrono::time_point<std::chrono::steady_clock> last_render;
 };

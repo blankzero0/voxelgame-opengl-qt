@@ -7,7 +7,7 @@ void WorldBuilder::set_center(const Point& center)
 }
 
 WorldBuilder::WorldBuilder(World& world)
-	: chunk_surrounder(*this, *this), world(world)
+	: chunk_surrounder(generation_distance, *this, *this), world(world)
 {
 	unsigned int thread_count = std::jthread::hardware_concurrency();
 	threads.reserve(thread_count);
